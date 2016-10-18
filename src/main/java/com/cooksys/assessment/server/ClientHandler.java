@@ -43,42 +43,47 @@ public class ClientHandler implements Runnable {
 				switch (message.getCommand()) {
 					case "connect":
 						log.info("user <{}> connected", currentTime.format(formattedTime), message.getUsername());
+						message.setContents(currentTime.format(formattedTime) + " " + message.getUsername() + " has connected");
 						response = mapper.writeValueAsString(message);
 						writer.write(response);
 						writer.flush();
 						break;
 					case "disconnect":
 						log.info("user <{}> disconnected", currentTime.format(formattedTime), message.getUsername());
-						this.socket.close();
+						message.setContents(currentTime.format(formattedTime) + " " + message.getUsername() + " has disconnected");
 						response = mapper.writeValueAsString(message);
 						writer.write(response);
 						writer.flush();
+						this.socket.close();
 						break;
 					case "echo":
-						log.info("user <{}> echoed message <{}>", currentTime.format(formattedTime), message.getUsername(), message.getContents());
+						log.info("user <{}> echoed message <{}>", currentTime.format(formattedTime), message.getUsername(), message.getContents()); //need to finish message
+						message.setContents(currentTime.format(formattedTime) + " " + message.getUsername() + " (echo): " );
 						response = mapper.writeValueAsString(message);
 						writer.write(response);
 						writer.flush();
 						break;
 					case "broadcast":
-						log.info("user <{}> broadcasted message <{}>", currentTime.format(formattedTime), message.getUsername(), message.getContents());
+						log.info("user <{}> broadcasted message <{}>", currentTime.format(formattedTime), message.getUsername(), message.getContents()); //need to finish message
+						message.setContents(currentTime.format(formattedTime) + " " + message.getUsername() + " (all): " );
 						response = mapper.writeValueAsString(message);
 						writer.write(response);
 						writer.flush();
 						break;
 					case "users":
-						log.info("user <{}> users message <{}>", currentTime.format(formattedTime), message.getUsername(), message.getContents());
+						log.info("user <{}> users message <{}>", currentTime.format(formattedTime), message.getUsername(), message.getContents()); //need to finish message
+						message.setContents(currentTime.format(formattedTime) + " " + message.getUsername() + " currently connected users: ");
 						response = mapper.writeValueAsString(message);
 						writer.write(response);
 						writer.flush();
 						break;
 					case "directMessage":
-						log.info("user <{}> direct message <{}>", currentTime.format(formattedTime), message.getUsername(), message.getContents()); // add current time to "connect" case
+						log.info("user <{}> direct message <{}>", currentTime.format(formattedTime), message.getUsername(), message.getContents()); //need to finish message
+						message.setContents(currentTime.format(formattedTime) + " " + message.getUsername() + " (whisper): ");
 						response = mapper.writeValueAsString(message);
 						writer.write(response);
 						writer.flush();
 						break;
-					
 				}
 			}
 
