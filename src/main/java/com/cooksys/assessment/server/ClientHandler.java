@@ -37,19 +37,44 @@ public class ClientHandler implements Runnable {
 				String raw = reader.readLine();
 				Message message = mapper.readValue(raw, Message.class);
 				LocalDateTime currentTime = LocalDateTime.now();
-//
+				
+				String response = "";
 				
 				switch (message.getCommand()) {
 					case "connect":
-						log.info("user <{}> connected", message.getUsername());
+						log.info("user <{}> connected", currentTime.format(formattedTime), message.getUsername());
+						response = mapper.writeValueAsString(message);
+						writer.write(response);
+						writer.flush();
 						break;
 					case "disconnect":
-						log.info("user <{}> disconnected", message.getUsername());
+						log.info("user <{}> disconnected", currentTime.format(formattedTime), message.getUsername());
 						this.socket.close();
+						response = mapper.writeValueAsString(message);
+						writer.write(response);
+						writer.flush();
 						break;
 					case "echo":
-						log.info("user <{}> echoed message <{}>", currentTime.format(formattedTime), message.getUsername(), message.getContents()); // add current time to "connect" case
-						String response = mapper.writeValueAsString(message);
+						log.info("user <{}> echoed message <{}>", currentTime.format(formattedTime), message.getUsername(), message.getContents());
+						response = mapper.writeValueAsString(message);
+						writer.write(response);
+						writer.flush();
+						break;
+					case "broadcast":
+						log.info("user <{}> broadcasted message <{}>", currentTime.format(formattedTime), message.getUsername(), message.getContents());
+						response = mapper.writeValueAsString(message);
+						writer.write(response);
+						writer.flush();
+						break;
+					case "users":
+						log.info("user <{}> users message <{}>", currentTime.format(formattedTime), message.getUsername(), message.getContents());
+						response = mapper.writeValueAsString(message);
+						writer.write(response);
+						writer.flush();
+						break;
+					case "directMessage":
+						log.info("user <{}> direct message <{}>", currentTime.format(formattedTime), message.getUsername(), message.getContents()); // add current time to "connect" case
+						response = mapper.writeValueAsString(message);
 						writer.write(response);
 						writer.flush();
 						break;

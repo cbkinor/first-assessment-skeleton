@@ -18,7 +18,7 @@ cli
     username = args.username
 
     server = connect({ host: 'localhost', port: 8080 }, () => {
-      server.write(new Message({ username, command: 'connect' }).toJSON() + '\n')
+      server.write(new Message({ username, command: connect, contents: 'Allow connection' }).toJSON() + '\n')
       callback()
     })
 
@@ -28,6 +28,12 @@ cli
         this.log(cli.chalk['red'](Message.fromJSON(buffer).toString()))
       } else if (Message.fromJSON(buffer).command === 'echo') {
         this.log(cli.chalk['blue'](Message.fromJSON(buffer).toString()))
+      } else if (Message.fromJSON(buffer).command === 'broadcast') {
+        this.log(cli.chalk['magenta'](Message.fromJSON(buffer).toString()))
+      } else if (Message.fromJSON(buffer).command === 'users') {
+        this.log(cli.chalk['cyan'](Message.fromJSON(buffer).toString()))
+      } else if (Message.fromJSON(buffer).command === 'directMessage') {
+        this.log(cli.chalk['bgRed'](Message.fromJSON(buffer).toString()))
       }
     })
 

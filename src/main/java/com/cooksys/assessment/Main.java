@@ -29,5 +29,4 @@ public class Main {
 			log.error("Something went wrong :/", e);
 		}
 	}
-	
 }
