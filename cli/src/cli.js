@@ -23,8 +23,12 @@ cli
     })
 
     server.on('data', (buffer) => {
-      let timeStamp = ''
       this.log(Message.fromJSON(buffer).toString())
+      if (Message.fromJSON(buffer).command === 'connect' || Message.fromJSON(buffer).command === 'disconnect') {
+        this.log(cli.chalk['red'](Message.fromJSON(buffer).toString()))
+      } else if (Message.fromJSON(buffer).command === 'echo') {
+        this.log(cli.chalk['blue'](Message.fromJSON(buffer).toString()))
+      }
     })
 
     server.on('end', () => {
