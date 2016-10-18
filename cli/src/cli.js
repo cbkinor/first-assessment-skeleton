@@ -16,12 +16,14 @@ cli
   .delimiter(cli.chalk['green']('connected>'))
   .init(function (args, callback) {
     username = args.username
+
     server = connect({ host: 'localhost', port: 8080 }, () => {
       server.write(new Message({ username, command: 'connect' }).toJSON() + '\n')
       callback()
     })
 
     server.on('data', (buffer) => {
+      let timeStamp = ''
       this.log(Message.fromJSON(buffer).toString())
     })
 
