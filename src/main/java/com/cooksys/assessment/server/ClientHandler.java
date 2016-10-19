@@ -57,29 +57,29 @@ public class ClientHandler implements Runnable {
 						this.socket.close();
 						break;
 					case "echo":
-						log.info("user <{}> echoed message <{}>", currentTime.format(formattedTime), message.getUsername(), message.getContents()); //need to finish message
-						message.setContents(currentTime.format(formattedTime) + " " + message.getUsername() + " (echo): " );
+						log.info("user <{}> echoed message <{}>", currentTime.format(formattedTime), message.getUsername(), message.getContents());
+						message.setContents(currentTime.format(formattedTime) + " " + message.getUsername() + " (echo): " + message.getContents());
 						response = mapper.writeValueAsString(message);
 						writer.write(response);
 						writer.flush();
 						break;
 					case "broadcast":
-						log.info("user <{}> broadcasted message <{}>", currentTime.format(formattedTime), message.getUsername(), message.getContents()); //need to finish message
-						message.setContents(currentTime.format(formattedTime) + " " + message.getUsername() + " (all): " );
+						log.info("user <{}> broadcasted message <{}>", currentTime.format(formattedTime), message.getUsername(), message.getContents());
+						message.setContents(currentTime.format(formattedTime) + " " + message.getUsername() + " (all): " + message.getContents());
 						response = mapper.writeValueAsString(message);
 						writer.write(response);
 						writer.flush();
 						break;
 					case "users":
-						log.info("user <{}> users message <{}>", currentTime.format(formattedTime), message.getUsername(), message.getContents()); //need to finish message
-						message.setContents(currentTime.format(formattedTime) + " " + message.getUsername() + " currently connected users: ");
+						log.info("user <{}> users message <{}>", currentTime.format(formattedTime), message.getUsername(), message.getContents());
+						message.setContents(currentTime.format(formattedTime) + " " + message.getUsername() + " currently connected users: " + message.getContents());
 						response = mapper.writeValueAsString(message);
 						writer.write(response);
 						writer.flush();
 						break;
 					case "directMessage":
-						log.info("user <{}> direct message <{}>", currentTime.format(formattedTime), message.getUsername(), message.getContents()); //need to finish message
-						message.setContents(currentTime.format(formattedTime) + " " + message.getUsername() + " (whisper): ");
+						log.info("user <{}> direct message <{}>", currentTime.format(formattedTime), message.getUsername(), message.getContents());
+						message.setContents(currentTime.format(formattedTime) + " " + message.getUsername() + " (whisper): " + message.getContents());
 						response = mapper.writeValueAsString(message);
 						writer.write(response);
 						writer.flush();
