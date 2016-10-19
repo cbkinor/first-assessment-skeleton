@@ -34,8 +34,6 @@ public class ClientHandler implements Runnable {
 		this.userName = userName;
 	}
 
-
-	
 	public void run() {
 		try {
 
@@ -82,7 +80,13 @@ public class ClientHandler implements Runnable {
 						break;
 					case "users":
 						log.info("user <{}> users message <{}>", currentTime.format(formattedTime), message.getUsername());
-						message.setContents(currentTime.format(formattedTime) + " " + message.getUsername() + " currently connected users: ");
+						message.setContents(currentTime.format(formattedTime) + " "  + " currently connected users: " + message.getUsername());
+						for (String userName : users.keySet()) {
+                            ClientHandler handler = users.get(userName);
+                            if(handler.userName != null) {
+                                message.addContents("\n" + handler.userName);
+                            }
+                        }
 						response = mapper.writeValueAsString(message);
 						writer.write(response);
 						writer.flush();

@@ -2,7 +2,7 @@ import vorpal from 'vorpal'
 import { words } from 'lodash'
 import { connect } from 'net'
 import { Message } from './Message'
-
+// let chalk = require('chalk')
 export const cli = vorpal()
 
 let username
@@ -43,8 +43,8 @@ cli
   })
 })
   .action(function (input, callback) {
-    const [ command, ...rest ] = words(input)
-    const contents = rest.join(' ')
+    let [ command, ...rest ] = words(input, /[^\s]+/g)
+    let contents = rest.join(' ')
 
     if (command === 'disconnect') {
       server.end(new Message({ username, command }).toJSON() + '\n')

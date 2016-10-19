@@ -29,5 +29,5 @@ public class Message {
 	public void setContents(String contents) {
 		this.contents = contents;
 	}
-//	public void addContents(String contents) { this.contents += contents; }
+	public void addContents(String contents) { this.contents += contents; }
 }
