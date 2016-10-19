@@ -29,7 +29,6 @@ public class Server implements Runnable {
 	
 	public void addUser(String user, ClientHandler handler) {
 		allUsers.put(user, handler);
-		
 	}
 	
 	public void removeUser(String user) {

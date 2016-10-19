@@ -22,6 +22,7 @@ public class ClientHandler implements Runnable {
 	private Socket socket;
 	private Server server;
 	private String userName;
+	String response = "";
 
 	public ClientHandler(Socket socket, Server server) {
 		super();
@@ -29,9 +30,10 @@ public class ClientHandler implements Runnable {
 		this.server = server;
 	}
 	
-	private BufferedReader in;
-	private PrintWriter out;
-	
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
 
 	
 	public void run() {
@@ -48,8 +50,6 @@ public class ClientHandler implements Runnable {
 				Message message = mapper.readValue(raw, Message.class);
 				LocalDateTime currentTime = LocalDateTime.now();
 				
-				String response = "";
-				
 				switch (message.getCommand()) {
 					case "connect":
 						log.info("user <{}> connected", currentTime.format(formattedTime), message.getUsername());
@@ -57,7 +57,6 @@ public class ClientHandler implements Runnable {
 						response = mapper.writeValueAsString(message);
 						writer.write(response);
 						writer.flush();
-//						
 						break;
 					case "disconnect":
 						log.info("user <{}> disconnected", currentTime.format(formattedTime), message.getUsername());
@@ -82,8 +81,8 @@ public class ClientHandler implements Runnable {
 						writer.flush();
 						break;
 					case "users":
-						log.info("user <{}> users message <{}>", currentTime.format(formattedTime), message.getUsername(), message.getContents());
-						message.setContents(currentTime.format(formattedTime) + " " + message.getUsername() + " currently connected users: " + message.getContents());
+						log.info("user <{}> users message <{}>", currentTime.format(formattedTime), message.getUsername());
+						message.setContents(currentTime.format(formattedTime) + " " + message.getUsername() + " currently connected users: ");
 						response = mapper.writeValueAsString(message);
 						writer.write(response);
 						writer.flush();

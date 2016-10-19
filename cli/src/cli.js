@@ -22,11 +22,11 @@ cli
   })
 
   server.on('data', (buffer) => {
-    this.log(Message.fromJSON(buffer).toString())
+    // this.log(Message.fromJSON(buffer).toString())
     if (Message.fromJSON(buffer).command === 'connect' || Message.fromJSON(buffer).command === 'disconnect') {
       this.log(cli.chalk['red'](Message.fromJSON(buffer).toString()))
     } else if (Message.fromJSON(buffer).command === 'echo') {
-      this.log(cli.chalk['blue'](Message.fromJSON(buffer).toString()))
+      this.log(cli.chalk['red'](Message.fromJSON(buffer).toString()))
     } else if (Message.fromJSON(buffer).command === 'broadcast') {
       this.log(cli.chalk['magenta'](Message.fromJSON(buffer).toString()))
     } else if (Message.fromJSON(buffer).command === 'users') {
