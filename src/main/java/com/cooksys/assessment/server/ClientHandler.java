@@ -29,6 +29,9 @@ public class ClientHandler implements Runnable {
 		this.server = server;
 	}
 	
+	private BufferedReader in;
+	private PrintWriter out;
+	
 
 	
 	public void run() {
