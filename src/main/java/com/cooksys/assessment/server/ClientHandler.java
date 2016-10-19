@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,12 +20,17 @@ public class ClientHandler implements Runnable {
 	private Logger log = LoggerFactory.getLogger(ClientHandler.class);
 
 	private Socket socket;
+	private Server server;
+	private String userName;
 
-	public ClientHandler(Socket socket) {
+	public ClientHandler(Socket socket, Server server) {
 		super();
 		this.socket = socket;
+		this.server = server;
 	}
+	
 
+	
 	public void run() {
 		try {
 
@@ -34,6 +40,7 @@ public class ClientHandler implements Runnable {
 			DateTimeFormatter formattedTime = DateTimeFormatter.ofPattern("hh:mm:ss a MMM d yyyy"); // format message timestamp, using ofPattern makes it reusable - immutable
 
 			while (!socket.isClosed()) {
+				ConcurrentHashMap<String, ClientHandler> users = server.getAllUsers();
 				String raw = reader.readLine();
 				Message message = mapper.readValue(raw, Message.class);
 				LocalDateTime currentTime = LocalDateTime.now();
@@ -47,6 +54,7 @@ public class ClientHandler implements Runnable {
 						response = mapper.writeValueAsString(message);
 						writer.write(response);
 						writer.flush();
+//						
 						break;
 					case "disconnect":
 						log.info("user <{}> disconnected", currentTime.format(formattedTime), message.getUsername());
