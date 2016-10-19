@@ -32,7 +32,9 @@ cli
     } else if (Message.fromJSON(buffer).command === 'users') {
       this.log(cli.chalk['cyan'](Message.fromJSON(buffer).toString()))
     } else if (Message.fromJSON(buffer).command === 'directMessage') {
-      this.log(cli.chalk['bgRed'](Message.fromJSON(buffer).toString()))
+      this.log(cli.chalk['bgblue'](Message.fromJSON(buffer).toString()))
+    } else if (Message.fromJSON(buffer).command.charAt(0) === '@') {
+      this.log(cli.chalk['bgred'](Message.fromJSON(buffer).toString()))
     }
   })
 
@@ -47,6 +49,16 @@ cli
     if (command === 'disconnect') {
       server.end(new Message({ username, command }).toJSON() + '\n')
     } else if (command === 'echo') {
+      server.write(new Message({ username, command, contents }).toJSON() + '\n')
+    } else if (command === 'broadcast') {
+      server.write(new Message({ username, command, contents }).toJSON() + '\n')
+    } else if (command === 'users') {
+      server.write(new Message({ username, command, contents }).toJSON() + '\n')
+    } else if (command === 'directMessage') {
+      server.write(new Message({ username, command, contents }).toJSON() + '\n')
+    } else if (command.charAt(0) === '@') {
+      server.write(new Message({ username, command, contents }).toJSON() + '\n')
+    } else if (command !== undefined) {
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
     } else {
       this.log(`Command <${command}> was not recognized`)
