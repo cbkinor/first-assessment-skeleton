@@ -74,7 +74,7 @@ public class ClientHandler implements Runnable {
 				switch (message.getCommand()) {
 					case "connect":
 						if(!users.containsKey(message.getUsername()) && !(message.getUsername().indexOf(' ') >= 0)) {
-							log.info("user <{}> connected" + " " + currentTime.format(formattedTime) + " - " + message.getUsername());
+							log.info("<{}> user <{}> connected" + " " + currentTime.format(formattedTime));
 							server.addUser(message.getUsername(), this);
 							setUserName(message.getUsername());
 							message.setContents(currentTime.format(formattedTime) + " " + message.getUsername() + " has connected");
@@ -84,7 +84,7 @@ public class ClientHandler implements Runnable {
 							break;
 						}
 					case "disconnect":
-						log.info("user <{}> disconnected", currentTime.format(formattedTime), message.getUsername());
+						log.info("<{}> user <{}> disconnected", currentTime.format(formattedTime), message.getUsername());
 						message.setContents(currentTime.format(formattedTime) + " " + message.getUsername() + " has disconnected");
 						response = mapper.writeValueAsString(message);
 						writer.write(response);
@@ -92,7 +92,7 @@ public class ClientHandler implements Runnable {
 						this.socket.close();
 						break;
 					case "echo":
-						log.info("user <{}> echoed message <{}>", currentTime.format(formattedTime), message.getUsername(), message.getContents());
+						log.info("<{}> user <{}> echoed message <{}>", currentTime.format(formattedTime), message.getUsername(), message.getContents());
 						message.setContents(currentTime.format(formattedTime) + " " + message.getUsername() + " (echo): " + message.getContents());
 						response = mapper.writeValueAsString(message);
 						writer.write(response);
@@ -100,7 +100,7 @@ public class ClientHandler implements Runnable {
 						break;
 					
 					case "users":
-						log.info("user <{}> users message <{}>", currentTime.format(formattedTime), message.getUsername());
+						log.info("<{}> user <{}> users message <{}>", currentTime.format(formattedTime), message.getUsername());
 						message.setContents(currentTime.format(formattedTime) + " "  + " currently connected users: " + message.getUsername());
 						for (String userName : users.keySet()) {
                             ClientHandler handler = users.get(userName);
@@ -113,7 +113,7 @@ public class ClientHandler implements Runnable {
 						writer.flush();
 						break;
 					case "broadcast":
-						log.info("user <{}> broadcasted message <{}>", currentTime.format(formattedTime), message.getUsername(), message.getContents());
+						log.info("<{}> user <{}> broadcasted message <{}>", currentTime.format(formattedTime), message.getUsername(), message.getContents());
 						message.setContents(currentTime.format(formattedTime) + " " + message.getUsername() + " (all): " + message.getContents());
 						response = mapper.writeValueAsString(message);
 						for (String everyUser : server.getAllUsers().keySet()) {
@@ -133,8 +133,14 @@ public class ClientHandler implements Runnable {
 	    				        sendMessager(handler, response);
 	                        }
 	                        writer.flush();
-	                        break;
-						}
+						} else {
+                            log.info("<{}> user <{}> user does not exist <{}>", currentTime.format(formattedTime), message.getUsername(), user);
+                            message.setContents("That user does not exist. Please check your spelling.");
+                            response = mapper.writeValueAsString(message);
+                            writer.write(response);
+                            writer.flush();
+                        }
+						break;
 				}
 			}
 		} catch (IOException e) {

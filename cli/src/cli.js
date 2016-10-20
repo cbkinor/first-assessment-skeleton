@@ -8,19 +8,18 @@ export const cli = vorpal()
 let username
 let server
 let lastCommand
-
 // var colors = require('colors/safe')
 
 cli
   .delimiter(cli.chalk['yellow']('ftd~$'))
 
 cli
-.mode('connect <username>')
+.mode('connect <username> [externalCon]')
 .delimiter(cli.chalk['green']('connected>'))
 .init(function (args, callback) {
   username = args.username
-
-  server = connect({ host: args.server, port: 8080 }, () => {
+  let host = args.externalCon ? args.externalCon : 'localhost'
+  server = connect({ host: host, port: 8080 }, () => {
     server.write(new Message({ username, command: 'connect' }).toJSON() + '\n')
     callback()
   })
@@ -30,7 +29,7 @@ cli
     const m = Message.fromJSON(buffer)
     if (Message.fromJSON(buffer).command === 'connect' || Message.fromJSON(buffer).command === 'disconnect') {
       this.log(cli.chalk['red'](m.toString()))
-    } else if (Message.fromJSON(buffer).command === 'echo') {
+    } else if (m.command === 'echo') {
       this.log(cli.chalk['red'](m.toString()))
     } else if (Message.fromJSON(buffer).command === 'broadcast') {
       this.log(cli.chalk['red'](m.toString()))
