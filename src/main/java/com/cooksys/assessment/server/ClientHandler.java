@@ -22,7 +22,7 @@ public class ClientHandler implements Runnable {
 	private Socket socket;
 	private Server server;
 	private String userName;
-	String response = "";
+	
 
 	public ClientHandler(Socket socket, Server server) {
 		super();
@@ -33,6 +33,29 @@ public class ClientHandler implements Runnable {
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
+	
+	 private void sendMessage(ClientHandler handler, String response) {
+	        try {
+	            PrintWriter writer = new PrintWriter(new OutputStreamWriter(handler.socket.getOutputStream()));
+	            writer.write(response);
+	            writer.flush();
+	        } catch (IOException e) {
+	            server.removeUser(this.userName);
+	            log.error("Something went wrong :/", e);
+	        }
+	    }
+	
+	 private void broadcastMessage(String response) {
+	        for (String user : server.getAllUsers().keySet()) {
+	            ClientHandler handler = server.getAllUsers().get(user);
+	            sendMessage(handler, response);
+	        }
+	    }
+
+	    private void directMessage(String response, String user) {
+	        ClientHandler receiver = server.getAllUsers().get(user);
+	        sendMessage(receiver, response);
+	    }
 
 	public void run() {
 		try {
@@ -41,16 +64,27 @@ public class ClientHandler implements Runnable {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			PrintWriter writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
 			DateTimeFormatter formattedTime = DateTimeFormatter.ofPattern("hh:mm:ss a MMM d yyyy"); // format message timestamp, using ofPattern makes it reusable - immutable
-
+			
 			while (!socket.isClosed()) {
 				ConcurrentHashMap<String, ClientHandler> users = server.getAllUsers();
 				String raw = reader.readLine();
 				Message message = mapper.readValue(raw, Message.class);
 				LocalDateTime currentTime = LocalDateTime.now();
+				String response = "";
+				String user = "";
+				
+                if (message.getCommand() == null || message.getCommand() == "undefined") {
+                    message.setCommand("invalid");
+                }
+                
+                if (message.getCommand().charAt(0) == '@') {
+                    user = message.getCommand().substring(1);
+                    message.setCommand("@");
+                }
 				
 				switch (message.getCommand()) {
 					case "connect":
-						log.info("user <{}> connected", currentTime.format(formattedTime), message.getUsername());
+						log.info("user <{}> connected" + " " + currentTime.format(formattedTime) + " - " + message.getUsername());
 						message.setContents(currentTime.format(formattedTime) + " " + message.getUsername() + " has connected");
 						response = mapper.writeValueAsString(message);
 						writer.write(response);
@@ -75,7 +109,7 @@ public class ClientHandler implements Runnable {
 						log.info("user <{}> broadcasted message <{}>", currentTime.format(formattedTime), message.getUsername(), message.getContents());
 						message.setContents(currentTime.format(formattedTime) + " " + message.getUsername() + " (all): " + message.getContents());
 						response = mapper.writeValueAsString(message);
-						writer.write(response);
+						broadcastMessage(response);
 						writer.flush();
 						break;
 					case "users":
@@ -95,9 +129,20 @@ public class ClientHandler implements Runnable {
 						log.info("user <{}> direct message <{}>", currentTime.format(formattedTime), message.getUsername(), message.getContents());
 						message.setContents(currentTime.format(formattedTime) + " " + message.getUsername() + " (whisper): " + message.getContents());
 						response = mapper.writeValueAsString(message);
-						writer.write(response);
+						directMessage(response, user);
 						writer.flush();
 						break;
+					case "@":
+						if(users.containsKey(user)){
+							log.info("<{}> user <{}> direct message <{}>", currentTime.format(formattedTime),
+		                        message.getUsername(), message.getContents());
+		                        message.setContents(currentTime.format(formattedTime) + " " + message.getUsername() + " (whisper): " + message.getContents());
+		                        response = mapper.writeValueAsString(message);
+		                        directMessage(response, user);
+								writer.flush();
+								break;
+						}
+						
 				}
 			}
 

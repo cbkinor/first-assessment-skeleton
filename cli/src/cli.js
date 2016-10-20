@@ -2,11 +2,14 @@ import vorpal from 'vorpal'
 import { words } from 'lodash'
 import { connect } from 'net'
 import { Message } from './Message'
-// let chalk = require('chalk')
+
 export const cli = vorpal()
 
 let username
 let server
+let lastCommand
+
+var colors = require('colors/safe')
 
 cli
   .delimiter(cli.chalk['yellow']('ftd~$'))
@@ -23,18 +26,19 @@ cli
 
   server.on('data', (buffer) => {
     // this.log(Message.fromJSON(buffer).toString())
+    const m = Message.fromJSON(buffer).toString()
     if (Message.fromJSON(buffer).command === 'connect' || Message.fromJSON(buffer).command === 'disconnect') {
-      this.log(cli.chalk['red'](Message.fromJSON(buffer).toString()))
+      this.log(colors.red(m))
     } else if (Message.fromJSON(buffer).command === 'echo') {
-      this.log(cli.chalk['red'](Message.fromJSON(buffer).toString()))
+      this.log(colors.red(m))
     } else if (Message.fromJSON(buffer).command === 'broadcast') {
-      this.log(cli.chalk['magenta'](Message.fromJSON(buffer).toString()))
+      this.log(cli.chalk['magenta'](m))
     } else if (Message.fromJSON(buffer).command === 'users') {
-      this.log(cli.chalk['cyan'](Message.fromJSON(buffer).toString()))
+      this.log(cli.chalk['cyan'](m))
     } else if (Message.fromJSON(buffer).command === 'directMessage') {
-      this.log(cli.chalk['bgblue'](Message.fromJSON(buffer).toString()))
+      this.log(cli.chalk['bgblue'](m))
     } else if (Message.fromJSON(buffer).command.charAt(0) === '@') {
-      this.log(cli.chalk['bgred'](Message.fromJSON(buffer).toString()))
+      this.log(cli.chalk['bgred'](m))
     }
   })
 
@@ -49,16 +53,22 @@ cli
     if (command === 'disconnect') {
       server.end(new Message({ username, command }).toJSON() + '\n')
     } else if (command === 'echo') {
+      lastCommand
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
     } else if (command === 'broadcast') {
+      lastCommand
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
     } else if (command === 'users') {
+      lastCommand
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
     } else if (command === 'directMessage') {
+      lastCommand
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
     } else if (command.charAt(0) === '@') {
+      lastCommand
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
     } else if (command !== undefined) {
+      lastCommand
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
     } else {
       this.log(`Command <${command}> was not recognized`)

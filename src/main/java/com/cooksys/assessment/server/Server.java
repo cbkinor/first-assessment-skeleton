@@ -12,11 +12,9 @@ import org.slf4j.LoggerFactory;
 public class Server implements Runnable {
 	private Logger log = LoggerFactory.getLogger(Server.class);
 	private ConcurrentHashMap<String, ClientHandler> allUsers = new ConcurrentHashMap<>();
-	
-	
 	private int port;
 	private ExecutorService executor;
-	
+
 	public Server(int port, ExecutorService executor) {
 		super();
 		this.port = port;
@@ -26,19 +24,19 @@ public class Server implements Runnable {
 	public ConcurrentHashMap<String, ClientHandler> getAllUsers() {
 		return allUsers;
 	}
-	
+
 	public void addUser(String user, ClientHandler handler) {
 		allUsers.put(user, handler);
 	}
-	
+
 	public void removeUser(String user) {
 		allUsers.remove(user);
 	}
-	
+
 	public ClientHandler getUser(String user) {
 		return allUsers.get(user);
 	}
-	
+
 	public void run() {
 		log.info("server started");
 		ServerSocket ss;
