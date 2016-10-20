@@ -35,6 +35,16 @@ public class ClientHandler implements Runnable {
 		this.userName = userName;
 	}
 	
+	 private void sendMessager(ClientHandler handler, String response) {
+        try {
+            PrintWriter writer = new PrintWriter(new OutputStreamWriter(handler.socket.getOutputStream()));
+            writer.write(response);
+            writer.flush();
+        } catch (IOException e) {
+            server.removeUser(this.userName);
+            log.error("Something went wrong :/", e);
+        }
+    }
 
 	public void run() {
 		try {
@@ -113,18 +123,18 @@ public class ClientHandler implements Runnable {
 						writer.flush();
 						break;
 					case "@":
-					if(users.containsKey(user)){
-						log.info("<{}> user <{}> direct message <{}>", currentTime.format(formattedTime),
-                        message.getUsername(), message.getContents());
-                        message.setContents(currentTime.format(formattedTime) + " " + message.getUsername() + " (whisper): " + message.getContents());
-                        response = mapper.writeValueAsString(message);
-                        if(!(Objects.equals(server.getUser(user), this))) {
-                        	ClientHandler handler = server.getAllUsers().get(user);
-    				        sendMessager(handler, response);
-                        }
-                        writer.flush();
-                        break;
-					}
+						if(users.containsKey(user)){
+							log.info("<{}> user <{}> direct message <{}>", currentTime.format(formattedTime),
+	                        message.getUsername(), message.getContents());
+	                        message.setContents(currentTime.format(formattedTime) + " " + message.getUsername() + " (whisper): " + message.getContents());
+	                        response = mapper.writeValueAsString(message);
+	                        if(!(Objects.equals(server.getUser(user), this))) {
+	                        	ClientHandler handler = server.getAllUsers().get(user);
+	    				        sendMessager(handler, response);
+	                        }
+	                        writer.flush();
+	                        break;
+						}
 				}
 			}
 		} catch (IOException e) {

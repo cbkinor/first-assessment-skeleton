@@ -19,7 +19,8 @@ cli
 .delimiter(cli.chalk['green']('connected>'))
 .init(function (args, callback) {
   username = args.username
-  server = connect({ host: 'localhost', port: 8080 }, () => {
+
+  server = connect({ host: args.server, port: 8080 }, () => {
     server.write(new Message({ username, command: 'connect' }).toJSON() + '\n')
     callback()
   })
@@ -51,19 +52,20 @@ cli
     if (command === 'disconnect') {
       server.end(new Message({ username, command }).toJSON() + '\n')
     } else if (command === 'echo') {
-      lastCommand
+      lastCommand = command
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
     } else if (command === 'broadcast') {
-      lastCommand
+      lastCommand = command
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
     } else if (command === 'users') {
-      lastCommand
+      lastCommand = command
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
     } else if (command.charAt(0) === '@') {
-      lastCommand
+      lastCommand = command
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
-    } else if (command !== undefined) {
-      lastCommand
+    } else if (lastCommand !== undefined) {
+      contents = command + ' ' + contents
+      command = lastCommand
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
     } else {
       this.log(`Command <${command}> was not recognized`)
