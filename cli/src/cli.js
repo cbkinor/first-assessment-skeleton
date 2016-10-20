@@ -9,7 +9,7 @@ let username
 let server
 let lastCommand
 
-var colors = require('colors/safe')
+// var colors = require('colors/safe')
 
 cli
   .delimiter(cli.chalk['yellow']('ftd~$'))
@@ -26,19 +26,17 @@ cli
 
   server.on('data', (buffer) => {
     // this.log(Message.fromJSON(buffer).toString())
-    const m = Message.fromJSON(buffer).toString()
+    const m = Message.fromJSON(buffer)
     if (Message.fromJSON(buffer).command === 'connect' || Message.fromJSON(buffer).command === 'disconnect') {
-      this.log(colors.red(m))
+      this.log(cli.chalk['red'](m.toString()))
     } else if (Message.fromJSON(buffer).command === 'echo') {
-      this.log(colors.red(m))
+      this.log(cli.chalk['red'](m.toString()))
     } else if (Message.fromJSON(buffer).command === 'broadcast') {
-      this.log(cli.chalk['magenta'](m))
+      this.log(cli.chalk['red'](m.toString()))
     } else if (Message.fromJSON(buffer).command === 'users') {
-      this.log(cli.chalk['cyan'](m))
-    } else if (Message.fromJSON(buffer).command === 'directMessage') {
-      this.log(cli.chalk['bgblue'](m))
+      this.log(cli.chalk['cyan'](m.toString()))
     } else if (Message.fromJSON(buffer).command.charAt(0) === '@') {
-      this.log(cli.chalk['bgred'](m))
+      this.log(cli.chalk['red'](m.toString()))
     }
   })
 
@@ -59,9 +57,6 @@ cli
       lastCommand
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
     } else if (command === 'users') {
-      lastCommand
-      server.write(new Message({ username, command, contents }).toJSON() + '\n')
-    } else if (command === 'directMessage') {
       lastCommand
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
     } else if (command.charAt(0) === '@') {
