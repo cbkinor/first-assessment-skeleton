@@ -14,7 +14,7 @@ cli
   .delimiter(cli.chalk['yellow']('ftd~$'))
 
 cli
-.mode('connect <username> [externalCon]')
+.mode('connect <username> [host] [port]')
 .delimiter(cli.chalk['green']('connected>'))
 .init(function (args, callback) {
   username = args.username
