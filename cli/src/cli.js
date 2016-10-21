@@ -18,25 +18,24 @@ cli
 .delimiter(cli.chalk['green']('connected>'))
 .init(function (args, callback) {
   username = args.username
-  let host = args.externalCon ? args.externalCon : 'localhost'
-  server = connect({ host: host, port: 8080 }, () => {
+  server = connect({ host: 'localhost', port: 8080 }, () => {
     server.write(new Message({ username, command: 'connect' }).toJSON() + '\n')
     callback()
   })
 
   server.on('data', (buffer) => {
-    // this.log(Message.fromJSON(buffer).toString())
-    const m = Message.fromJSON(buffer)
-    if (Message.fromJSON(buffer).command === 'connect' || Message.fromJSON(buffer).command === 'disconnect') {
-      this.log(cli.chalk['red'](m.toString()))
-    } else if (m.command === 'echo') {
-      this.log(cli.chalk['red'](m.toString()))
-    } else if (Message.fromJSON(buffer).command === 'broadcast') {
-      this.log(cli.chalk['red'](m.toString()))
-    } else if (Message.fromJSON(buffer).command === 'users') {
-      this.log(cli.chalk['cyan'](m.toString()))
-    } else if (Message.fromJSON(buffer).command.charAt(0) === '@') {
-      this.log(cli.chalk['red'](m.toString()))
+    let message = Message.fromJSON(buffer)
+    let m = message.toString()
+    if (message.command === 'connect' || message.command === 'disconnect') {
+      cli.log(cli.chalk['green'](m))
+    } else if (message.command === 'echo') {
+      cli.log(cli.chalk['yellow'](m))
+    } else if (message.command === 'broadcast') {
+      cli.log(cli.chalk['red'](m))
+    } else if (message.command.charAt(0) === '@') {
+      cli.log(cli.chalk['magenta'](m))
+    } else if (message.command === 'users') {
+      cli.log(cli.chalk['blue'](m))
     }
   })
 
