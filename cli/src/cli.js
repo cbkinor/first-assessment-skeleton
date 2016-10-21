@@ -8,6 +8,8 @@ export const cli = vorpal()
 let username
 let server
 let lastCommand
+const PORT = '8080'
+const HOST = 'localhost'
 // var colors = require('colors/safe')
 
 cli
@@ -18,7 +20,9 @@ cli
 .delimiter(cli.chalk['green']('connected>'))
 .init(function (args, callback) {
   username = args.username
-  server = connect({ host: 'localhost', port: 8080 }, () => {
+  let host = (args.host) ? args.host	: HOST
+  let port = (args.port) ? args.port : PORT
+  server = connect({ host, port }, () => {
     server.write(new Message({ username, command: 'connect' }).toJSON() + '\n')
     callback()
   })
